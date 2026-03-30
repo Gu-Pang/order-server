@@ -1,6 +1,6 @@
 spring:
   application:
-    name: order
+    name: order-service
   cloud:
     config:
       enabled: false
@@ -25,5 +25,7 @@ spring:
         
 eureka:
   client:
-    register-with-eureka: false
-    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 19020
