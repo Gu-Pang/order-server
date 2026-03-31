@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.gupang.common.entity.BaseEntity;
+import org.gupang.common.exception.CustomException;
+import org.gupang.order.exception.ErrorCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,4 +40,33 @@ public class Order extends BaseEntity {
             orphanRemoval = true
     )
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    // 정적 팩토리 메서드 객체 생성 Build로 만들까?
+    public static Order createOrder(UUID supplierId,UUID receiverId, String message,List<OrderItem> items){
+        Order order = new Order();
+        order.supplierId = supplierId;
+        order.receiverId = receiverId;
+        order.status = Status.ORDER_CREATING;
+        order.message = message;
+
+        for (OrderItem item : items) {
+            order.addOrderItem(item);
+        }
+
+        return order;
+    }
+
+    private void addOrderItem(OrderItem item){
+        this.orderItems.add(item);
+        item.setOrder(this);
+    } // 이거 왜 이렇게 쓰는지 정확히 알아보기
+
+    // 취소 메서드
+    public void cancel(){
+        if(this.status != Status.ORDER_CREATING && this.status != Status.ORDER_ACCEPT){
+            throw new CustomException(ErrorCode.ORDER_ALREADY_IN_TRANSIT);
+        }
+        this.status = Status.ORDER_CANCEL;
+    }
+
 }
