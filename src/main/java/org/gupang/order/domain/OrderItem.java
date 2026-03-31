@@ -3,7 +3,6 @@ package org.gupang.order.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.UUID;
 
@@ -30,4 +29,16 @@ public class OrderItem {
 
     @Column(nullable = false)
     private Integer quantity;
+
+    public static OrderItem createOrderItem( UUID productId, Long totalPrice, Integer quantity){
+        OrderItem orderItem = new OrderItem();
+        orderItem.productId = productId;
+        orderItem.totalPrice = totalPrice;
+        orderItem.quantity = quantity;
+        return orderItem;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 }
