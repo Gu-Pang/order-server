@@ -2,7 +2,6 @@ package org.gupang.order.domain;
 
 public enum Status {
 
-    ORDER_CREATING,      // 주문 생성 중
     ORDER_ACCEPT,        // 주문 접수
     ORDER_SHIPPING,       // 배송 대기 중
     ORDER_CANCEL,        // 주문 취소
