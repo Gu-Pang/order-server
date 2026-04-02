@@ -20,14 +20,4 @@ public enum OrderErrorCode implements BaseErrorCode {
     private final HttpStatus httpStatus;
     private final String message;
 
-
-    @Override
-    public HttpStatus getHttpStatus() {
-        return this.httpStatus;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.message;
-    }
 }
