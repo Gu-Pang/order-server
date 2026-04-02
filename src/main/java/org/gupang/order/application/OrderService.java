@@ -1,6 +1,7 @@
 package org.gupang.order.application;
 
 import lombok.RequiredArgsConstructor;
+import org.gupang.order.domain.DeliveryInfo;
 import org.gupang.order.domain.Order;
 import org.gupang.order.domain.OrderItem;
 import org.gupang.order.domain.OrderRepository;
@@ -21,10 +22,16 @@ public class OrderService {
 
         List<OrderItem> orderItems = orderMapper.toOrderItemList(postOrderRequestDto.orderItems());
 
+        DeliveryInfo deliveryInfo = new DeliveryInfo(
+                postOrderRequestDto.address(),
+                postOrderRequestDto.detailAddress()
+        );
+
         Order order = Order.createOrder(
                 postOrderRequestDto.supplierId(),
                 postOrderRequestDto.receiverId(),
                 postOrderRequestDto.message(),
+                deliveryInfo,
                 orderItems
         );
 
