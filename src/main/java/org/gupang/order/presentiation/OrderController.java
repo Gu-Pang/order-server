@@ -3,8 +3,11 @@ package org.gupang.order.presentiation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.gupang.order.application.OrderService;
+import org.gupang.order.application.dto.OrderDto;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -20,7 +23,12 @@ public class OrderController {
 
 
     @PostMapping
-    public void createOrder(@Valid @RequestBody PostOrderRequestDto postOrderRequestDto){
-        orderService.createOrder(postOrderRequestDto);
+    public OrderDto createOrder(@Valid @RequestBody PostOrderRequestDto postOrderRequestDto){
+       return orderService.createOrder(postOrderRequestDto);
+    }
+
+    @GetMapping("/{orderId}")
+    public OrderDto getOrder(@PathVariable UUID orderId){
+        return orderService.getOrder(orderId);
     }
 }
