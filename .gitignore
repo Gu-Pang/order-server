@@ -230,3 +230,6 @@ postgres-data/
 .env
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,intellij+all,visualstudiocode,java,gradle
+
+# test
+/src/test/
