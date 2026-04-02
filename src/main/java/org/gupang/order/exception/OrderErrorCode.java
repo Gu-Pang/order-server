@@ -12,7 +12,8 @@ public enum OrderErrorCode implements BaseErrorCode {
     SUPPLIER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 업체입니다."),
     INVALID_ORDER_QUANTITY(HttpStatus.BAD_REQUEST, "주문 수량은 1개 이상이어야 합니다."),
     INVALID_PRODUCT_FOR_SUPPLIER(HttpStatus.BAD_REQUEST, "해당 업체의 상품이 아니거나 존재하지 않는 상품이 포함되어 있습니다."),
-    OUT_OF_STOCK(HttpStatus.CONFLICT, "상품의 재고가 부족합니다.")
+    OUT_OF_STOCK(HttpStatus.CONFLICT, "상품의 재고가 부족합니다."),
+    ORDER_IS_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 주문입니다.")
 
     ;
 
