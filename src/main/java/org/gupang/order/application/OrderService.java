@@ -1,12 +1,11 @@
 package org.gupang.order.application;
 
 import lombok.RequiredArgsConstructor;
-import org.gupang.order.application.dto.OrderDto;
 import org.gupang.order.domain.Order;
 import org.gupang.order.domain.OrderFactory;
 import org.gupang.order.domain.OrderItem;
 import org.gupang.order.domain.OrderRepository;
-import org.gupang.order.domain.dto.OrderCompanyInfo;
+import org.gupang.order.presentiation.dto.GetOrderResponseDto;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,21 +20,25 @@ public class OrderService {
     private final OrderValidator orderValidator;
     private final OrderFactory orderFactory;
 
-    @Transactional
     public void createOrder(PostOrderRequestDto postOrderRequestDto) {
-        OrderCompanyInfo companyInfo = orderValidator.validateOrder(postOrderRequestDto.orderItems());
 
+        UUID supplierId = orderValidator.validateAndGetSupplierId(postOrderRequestDto);
+        saveOrder(postOrderRequestDto, supplierId);
+    }
+
+    @Transactional
+    public void saveOrder(PostOrderRequestDto postOrderRequestDto,UUID supplierId) {
         List<OrderItem> orderItems = postOrderRequestDto.orderItems().stream()
                 .map(OrderItem::from)
                 .toList();
 
-        Order order = orderFactory.createFrom(postOrderRequestDto, companyInfo, orderItems);
-
+        Order order = orderFactory.createFrom(postOrderRequestDto, supplierId, orderItems);
         orderRepository.save(order);
     }
+
     @Transactional
-    public OrderDto getOrder(UUID orderId) {
+    public GetOrderResponseDto getOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId);
-        return OrderDto.from(order);
+        return GetOrderResponseDto.from(order);
     }
 }
