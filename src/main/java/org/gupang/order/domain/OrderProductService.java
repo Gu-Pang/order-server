@@ -1,12 +1,11 @@
 package org.gupang.order.domain;
 
-import org.gupang.order.domain.dto.OrderCompanyInfo;
 import org.gupang.order.domain.dto.OrderProductInfo;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface OrderProductService {
-    OrderCompanyInfo getOrderCompanyInfo(UUID companyId);
 
-    OrderProductInfo getOrderProductInfo(UUID productId);
+    List<OrderProductInfo> getOrderProductInfo(List<UUID> productIds);
 }

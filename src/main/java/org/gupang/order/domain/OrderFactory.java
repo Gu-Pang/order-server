@@ -5,18 +5,19 @@ import org.gupang.order.presentiation.dto.PostOrderRequestDto;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class OrderFactory {
 
-    public Order createFrom(PostOrderRequestDto dto, OrderCompanyInfo companyInfo, List<OrderItem> items) {
+    public Order createFrom(PostOrderRequestDto dto, UUID supplierId, List<OrderItem> items) {
         DeliveryInfo companyDeliveryInfo = new DeliveryInfo(
-                companyInfo.companyAddress(),
-                companyInfo.companyAddressDetail()
+                dto.address(),
+                dto.detailAddress()
         );
 
         return Order.createOrder(
-                companyInfo.companyId(),
+                supplierId,
                 dto.receiverId(),
                 dto.message(),
                 companyDeliveryInfo,
