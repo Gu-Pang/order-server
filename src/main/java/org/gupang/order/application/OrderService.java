@@ -35,4 +35,9 @@ public class OrderService {
         Order order = orderRepository.findById(orderId);
         return OrderDto.from(order);
     }
+
+    public void cancelOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId);
+        order.cancel();
+    }
 }
