@@ -9,9 +9,6 @@ import java.util.UUID;
 
 @Builder
 public record PostOrderRequestDto (
-        @NotNull(message = "업체 ID는 필수 입력값입니다.")
-        UUID supplierId,
-
         @NotNull(message = "수령자 ID는 필수 입력값입니다.")
         UUID receiverId,
 
@@ -19,6 +16,7 @@ public record PostOrderRequestDto (
 
         @NotNull
         String address,
+
         String detailAddress,
 
         @NotEmpty(message = "주문할 상품 목록은 비어있을 수 없습니다.")
