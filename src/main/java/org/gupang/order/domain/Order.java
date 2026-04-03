@@ -45,9 +45,8 @@ public class Order extends BaseEntity {
     )
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    // 정적 팩토리 메서드 객체 생성 Build로 만들까?
-    public static Order createOrder(UUID supplierId,UUID receiverId, String message,DeliveryInfo deliveryInfo,List<OrderItem> items){
-        if(supplierId==null||receiverId==null||message==null||items==null || deliveryInfo==null){
+    public static Order createOrder(UUID supplierId,UUID receiverId,String message,DeliveryInfo deliveryInfo,List<OrderItem> items){
+        if(supplierId==null||receiverId==null||message==null||items==null||deliveryInfo==null){
             throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
         Order order = new Order();
@@ -67,7 +66,17 @@ public class Order extends BaseEntity {
     private void addOrderItem(OrderItem item){
         this.orderItems.add(item);
         item.setOrder(this);
-    } // 이거 왜 이렇게 쓰는지 정확히 알아보기
+    }
+
+    public void startShipping(){
+        if(status==Status.ORDER_CANCEL){
+            throw new CustomException(OrderErrorCode.ORDER_ALREADY_CANCELLED);
+        }
+        if (this.status == Status.ORDER_SHIPPING){
+            return;
+        }
+        this.status = Status.ORDER_SHIPPING;
+    }
 
     // 취소 메서드
     public void cancel(){
