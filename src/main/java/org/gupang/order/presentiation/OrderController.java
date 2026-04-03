@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.gupang.order.application.OrderService;
 import org.gupang.order.application.dto.OrderDto;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -23,12 +25,13 @@ public class OrderController {
 
 
     @PostMapping
-    public OrderDto createOrder(@Valid @RequestBody PostOrderRequestDto postOrderRequestDto){
-       return orderService.createOrder(postOrderRequestDto);
+    public ResponseEntity<Void> createOrder(@Valid @RequestBody PostOrderRequestDto postOrderRequestDto){
+        orderService.createOrder(postOrderRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
     @GetMapping("/{orderId}")
-    public OrderDto getOrder(@PathVariable UUID orderId){
-        return orderService.getOrder(orderId);
+    public ResponseEntity<OrderDto> getOrder(@PathVariable UUID orderId){
+        return ResponseEntity.ok(orderService.getOrder(orderId));
     }
 }
