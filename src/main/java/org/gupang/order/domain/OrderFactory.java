@@ -11,8 +11,8 @@ public class OrderFactory {
 
     public Order createFrom(PostOrderRequestDto dto, OrderCompanyInfo companyInfo, List<OrderItem> items) {
         DeliveryInfo companyDeliveryInfo = new DeliveryInfo(
-                companyInfo.company_address(),
-                companyInfo.company_address_detail()
+                companyInfo.companyAddress(),
+                companyInfo.companyAddressDetail()
         );
 
         return Order.createOrder(

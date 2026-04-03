@@ -19,7 +19,7 @@ public class OrderValidator {
 
     public OrderCompanyInfo validateOrder(List<OrderItemRequestDto> itemDtos) {
         if (itemDtos.isEmpty()) {
-            throw new CustomException(OrderErrorCode.EMPTY_ORDER);
+            throw new CustomException(OrderErrorCode.EMPTY_ORDER_ITEM);
         }
 
         OrderProductInfo firstProduct = orderProductService.getOrderProductInfo(itemDtos.get(0).productId());

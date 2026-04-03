@@ -20,8 +20,8 @@ public class OrderProductServiceImpl implements OrderProductService {
         return new OrderCompanyInfo(
                 companyResponseDto.companyId(),
                 companyResponseDto.companyName(),
-                companyResponseDto.company_address(),
-                companyResponseDto.company_address_detail()
+                companyResponseDto.companyAddress(),
+                companyResponseDto.companyAddressDetail()
         );
     }
 

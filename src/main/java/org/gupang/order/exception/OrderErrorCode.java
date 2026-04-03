@@ -14,7 +14,7 @@ public enum OrderErrorCode implements BaseErrorCode {
     INVALID_PRODUCT_FOR_SUPPLIER(HttpStatus.BAD_REQUEST, "해당 업체의 상품이 아니거나 존재하지 않는 상품이 포함되어 있습니다."),
     OUT_OF_STOCK(HttpStatus.CONFLICT, "상품의 재고가 부족합니다."),
     ORDER_IS_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 주문입니다."),
-    EMPTY_ORDER(HttpStatus.NOT_FOUND,"주문이 비어있습니다."),
+    EMPTY_ORDER_ITEM(HttpStatus.BAD_REQUEST,"주문이 비어있습니다."),
     ORDER_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST,"이미 취소된 주문 입니다.")
 
     ;
