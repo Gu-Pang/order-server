@@ -3,7 +3,7 @@ package org.gupang.order.presentiation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.gupang.order.application.OrderService;
-import org.gupang.order.application.dto.OrderDto;
+import org.gupang.order.presentiation.dto.GetOrderResponseDto;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +18,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/test")
-    public String test(){
-        return "test성공!!!!!";
-    }
-
-
     @PostMapping
     public ResponseEntity<Void> createOrder(@Valid @RequestBody PostOrderRequestDto postOrderRequestDto){
         orderService.createOrder(postOrderRequestDto);
@@ -31,7 +25,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderDto> getOrder(@PathVariable UUID orderId){
+    public ResponseEntity<GetOrderResponseDto> getOrder(@PathVariable UUID orderId){
         return ResponseEntity.ok(orderService.getOrder(orderId));
     }
 }
