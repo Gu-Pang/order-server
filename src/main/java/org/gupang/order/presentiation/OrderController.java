@@ -19,9 +19,9 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Void> createOrder(@Valid @RequestBody PostOrderRequestDto postOrderRequestDto){
-        orderService.createOrder(postOrderRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    public ResponseEntity<UUID> createOrder(@Valid @RequestBody PostOrderRequestDto postOrderRequestDto){
+        UUID orderId = orderService.createOrder(postOrderRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderId);
     }
 
     @GetMapping("/{orderId}")
