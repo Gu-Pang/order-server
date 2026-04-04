@@ -1,8 +1,8 @@
 package org.gupang.order.application;
 
-import lombok.RequiredArgsConstructor;
 import org.gupang.common.exception.CustomException;
-import org.gupang.order.domain.OrderProductService;
+import org.gupang.order.application.dto.OrderRawData;
+import org.gupang.order.domain.dto.OrderCompanyInfo;
 import org.gupang.order.domain.dto.OrderProductInfo;
 import org.gupang.order.exception.OrderErrorCode;
 import org.gupang.order.presentiation.dto.PostOrderItemRequestDto;
@@ -15,34 +15,40 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
+
 public class OrderValidator {
-    private final OrderProductService orderProductService;
+    public void validate(PostOrderRequestDto request, OrderRawData rawData){
+        List<OrderProductInfo> productInfos = rawData.productInfos();
+        OrderCompanyInfo companyInfo = rawData.companyInfo();
 
-    public UUID validateAndGetSupplierId(PostOrderRequestDto postOrderRequestDto) {
-        List<UUID> productIds = postOrderRequestDto.orderItems().stream().map(PostOrderItemRequestDto::productId).toList();
-        List<OrderProductInfo> productInfos = orderProductService.getOrderProductInfo(productIds);
-
-        if (productInfos.isEmpty()) {
+        if(productInfos == null || productInfos.isEmpty() ){
             throw new CustomException(OrderErrorCode.SUPPLIER_NOT_FOUND);
         }
-        if (productInfos.size() != postOrderRequestDto.orderItems().size()) {
-            throw new CustomException(OrderErrorCode.INVALID_PRODUCT_FOR_SUPPLIER);
+
+        if(productInfos.size() != request.orderItems().size()){
+            throw new CustomException(OrderErrorCode.PRODUCT_NOT_BELONG_TO_SUPPLIER);
         }
-        UUID firstCompanyId = productInfos.get(0).companyId();
 
         Map<UUID,OrderProductInfo> productInfoMap = productInfos.stream().collect(Collectors.toMap(OrderProductInfo::productId,info->info));
 
-        for (PostOrderItemRequestDto itemDto : postOrderRequestDto.orderItems()) {
-            OrderProductInfo info = productInfoMap.get(itemDto.productId());
+        UUID targetSupplierId = companyInfo.companyId();
 
-            if (!info.companyId().equals(firstCompanyId)) {
-                throw new CustomException(OrderErrorCode.INVALID_PRODUCT_FOR_SUPPLIER);
+        for(PostOrderItemRequestDto itemRequestDto : request.orderItems()){
+            OrderProductInfo info = productInfoMap.get(itemRequestDto.productId());
+
+            if(itemRequestDto.quantity() < 1){
+                throw new CustomException(OrderErrorCode.INVALID_ORDER_QUANTITY);
             }
-            if (info.stock() < itemDto.quantity()) {
+
+            if(!info.companyId().equals(targetSupplierId)){
+                throw new CustomException(OrderErrorCode.MULTI_SUPPLIER_NOT_ALLOWED);
+            }
+
+            if(info.stock() < itemRequestDto.quantity()){
                 throw new CustomException(OrderErrorCode.OUT_OF_STOCK);
             }
         }
-        return firstCompanyId;
+
+
     }
 }
