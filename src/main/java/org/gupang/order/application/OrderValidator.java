@@ -17,38 +17,47 @@ import java.util.stream.Collectors;
 @Component
 
 public class OrderValidator {
-    public void validate(PostOrderRequestDto request, OrderRawData rawData){
-        List<OrderProductInfo> productInfos = rawData.productInfos();
-        OrderCompanyInfo companyInfo = rawData.companyInfo();
+    public void validate(PostOrderRequestDto postOrderRequestDto, OrderRawData rawData) {
+        validateHasData(rawData.productInfos());
+        validateIsProduct(postOrderRequestDto,rawData.productInfos());
+        validateBusinessRules(postOrderRequestDto,rawData);
+    }
 
-        if(productInfos == null || productInfos.isEmpty() ){
+    private void validateHasData(List<OrderProductInfo> productInfos){
+        if(productInfos==null||productInfos.isEmpty()){
             throw new CustomException(OrderErrorCode.SUPPLIER_NOT_FOUND);
         }
-
-        if(productInfos.size() != request.orderItems().size()){
+    }
+    private void validateIsProduct(PostOrderRequestDto postOrderRequestDto, List<OrderProductInfo> productInfos){
+        if(productInfos.size() != postOrderRequestDto.orderItems().size()){
             throw new CustomException(OrderErrorCode.PRODUCT_NOT_BELONG_TO_SUPPLIER);
         }
-
-        Map<UUID,OrderProductInfo> productInfoMap = productInfos.stream().collect(Collectors.toMap(OrderProductInfo::productId,info->info));
-
-        UUID targetSupplierId = companyInfo.companyId();
-
-        for(PostOrderItemRequestDto itemRequestDto : request.orderItems()){
-            OrderProductInfo info = productInfoMap.get(itemRequestDto.productId());
-
-            if(itemRequestDto.quantity() < 1){
-                throw new CustomException(OrderErrorCode.INVALID_ORDER_QUANTITY);
-            }
-
-            if(!info.companyId().equals(targetSupplierId)){
-                throw new CustomException(OrderErrorCode.MULTI_SUPPLIER_NOT_ALLOWED);
-            }
-
-            if(info.stock() < itemRequestDto.quantity()){
-                throw new CustomException(OrderErrorCode.OUT_OF_STOCK);
-            }
-        }
-
-
     }
+   private void validateBusinessRules(PostOrderRequestDto postOrderRequestDto, OrderRawData rawData){
+       Map<UUID, OrderProductInfo> productMap = createProductMap(rawData.productInfos());
+       UUID supplierId = rawData.companyInfo().companyId();
+
+       for(PostOrderItemRequestDto itemRequestDto : postOrderRequestDto.orderItems()){
+           OrderProductInfo info = productMap.get(itemRequestDto.productId());
+           checkItemDetails(itemRequestDto,info,supplierId);
+       }
+   }
+
+    private Map<UUID, OrderProductInfo> createProductMap(List<OrderProductInfo> productInfos) {
+        return productInfos.stream()
+                .collect(Collectors.toMap(OrderProductInfo::productId, info -> info));
+    }
+
+    private void checkItemDetails(PostOrderItemRequestDto request, OrderProductInfo info, UUID supplierId) {
+        if (request.quantity() < 1) {
+            throw new CustomException(OrderErrorCode.INVALID_ORDER_QUANTITY);
+        }
+        if (!info.companyId().equals(supplierId)) {
+            throw new CustomException(OrderErrorCode.MULTI_SUPPLIER_NOT_ALLOWED);
+        }
+        if (info.stock() < request.quantity()) {
+            throw new CustomException(OrderErrorCode.OUT_OF_STOCK);
+        }
+    }
+
 }
