@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.gupang.order.application.OrderService;
 import org.gupang.order.application.dto.OrderResult;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,4 +36,10 @@ public class OrderController {
         orderService.cancelOrder(orderId);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping
+    public ResponseEntity<Page<OrderResult>> getAllOrders(Pageable pageable){
+        return ResponseEntity.ok(orderService.getOrders(pageable));
+    }
+
 }
