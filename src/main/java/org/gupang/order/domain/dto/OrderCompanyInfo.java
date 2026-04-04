@@ -1,8 +1,8 @@
-package org.gupang.order.infrastructure.dto;
+package org.gupang.order.domain.dto;
 
 import java.util.UUID;
 
-public record CompanyResponseDto(
+public record OrderCompanyInfo(
         UUID companyId,
         String companyName,
         String companyAddress,

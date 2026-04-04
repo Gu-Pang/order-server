@@ -4,13 +4,13 @@ import org.gupang.order.domain.OrderItem;
 
 import java.util.UUID;
 
-public record OrderItemDto(
+public record OrderItemResult(
         UUID productId,
         Long totalPrice,
         Integer quantity
 ) {
-    public static OrderItemDto from(OrderItem item) {
-        return new OrderItemDto(
+    public static OrderItemResult from(OrderItem item) {
+        return new OrderItemResult(
                 item.getProductId(),
                 item.getTotalPrice(),
                 item.getQuantity()

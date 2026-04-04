@@ -1,9 +1,12 @@
 package org.gupang.order.application;
 
 import lombok.RequiredArgsConstructor;
-import org.gupang.order.application.dto.OrderDto;
-import org.gupang.order.domain.*;
-import org.gupang.order.infrastructure.dto.CompanyResponseDto;
+import org.gupang.order.application.dto.OrderRawData;
+import org.gupang.order.application.dto.OrderResult;
+import org.gupang.order.domain.Order;
+import org.gupang.order.domain.OrderFactory;
+import org.gupang.order.domain.OrderItem;
+import org.gupang.order.domain.OrderRepository;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,23 +20,31 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderValidator orderValidator;
     private final OrderFactory orderFactory;
+    private final OrderInfoProvider orderInfoProvider;
 
     @Transactional
-    public void createOrder(PostOrderRequestDto postOrderRequestDto) {
-        CompanyResponseDto companyInfo = orderValidator.validateOrder(postOrderRequestDto.orderItems());
+    public UUID createOrder(PostOrderRequestDto postOrderRequestDto) {
+    List<UUID> productIds = postOrderRequestDto.orderItems().stream()
+            .map(item -> item.productId())
+            .toList();
+        OrderRawData rawData = orderInfoProvider.getOrderRawData(productIds);
 
+        orderValidator.validate(postOrderRequestDto, rawData);
         List<OrderItem> orderItems = postOrderRequestDto.orderItems().stream()
-                .map(OrderItem::from)
+                .map(OrderItem ::from)
                 .toList();
 
-        Order order = orderFactory.createFrom(postOrderRequestDto, companyInfo, orderItems);
+        Order order = orderFactory.createFrom(postOrderRequestDto,rawData,orderItems);
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        return savedOrder.getOrderId();
     }
 
-    public OrderDto getOrder(UUID orderId) {
+    @Transactional
+    public OrderResult getOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId);
-        return OrderDto.from(order);
+        return OrderResult.from(order);
     }
 
     public void cancelOrder(UUID orderId) {

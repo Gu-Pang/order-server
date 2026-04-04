@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Getter
 @Entity
-@Table(name = "P_Order")
+@Table(name = "p_orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseEntity {
 
@@ -36,7 +36,18 @@ public class Order extends BaseEntity {
     private String message;
 
     @Embedded
-    private DeliveryInfo deliveryInfo;
+    @AttributeOverrides({
+            @AttributeOverride(name = "address", column = @Column(name = "supplier_address")),
+            @AttributeOverride(name = "detailAddress",column = @Column(name = "supplier_detail_address"))
+    })
+    private DeliveryInfo supplierInfo;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "address", column = @Column(name = "receiver_address")),
+            @AttributeOverride(name = "detailAddress",column = @Column(name = "receiver_detail_address"))
+    })
+    private DeliveryInfo receiverInfo;
 
     @OneToMany(
             mappedBy = "order",
@@ -45,16 +56,24 @@ public class Order extends BaseEntity {
     )
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    public static Order createOrder(UUID supplierId,UUID receiverId,String message,DeliveryInfo deliveryInfo,List<OrderItem> items){
-        if(supplierId==null||receiverId==null||message==null||items==null||deliveryInfo==null){
+    public static Order createOrder(
+            UUID supplierId,
+            UUID receiverId,
+            String message,
+            DeliveryInfo receiverInfo,
+            DeliveryInfo supplierInfo,
+            List<OrderItem> items
+    ){
+        if(supplierId==null || receiverId==null || receiverInfo==null || supplierInfo==null || items==null || items.isEmpty()){
             throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
         Order order = new Order();
         order.supplierId = supplierId;
         order.receiverId = receiverId;
         order.status = Status.ORDER_ACCEPT;
-        order.deliveryInfo = deliveryInfo;
         order.message = message;
+        order.receiverInfo = receiverInfo;
+        order.supplierInfo = supplierInfo;
 
         for (OrderItem item : items) {
             order.addOrderItem(item);
@@ -78,7 +97,6 @@ public class Order extends BaseEntity {
         this.status = Status.ORDER_SHIPPING;
     }
 
-    // 취소 메서드
     public void cancel(){
         if(this.status != Status.ORDER_ACCEPT){
             throw new CustomException(OrderErrorCode.ORDER_ALREADY_IN_TRANSIT);

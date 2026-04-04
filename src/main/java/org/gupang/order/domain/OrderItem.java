@@ -3,7 +3,7 @@ package org.gupang.order.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.gupang.order.presentiation.dto.OrderItemRequestDto;
+import org.gupang.order.presentiation.dto.PostOrderItemRequestDto;
 
 import java.util.UUID;
 
@@ -39,18 +39,14 @@ public class OrderItem {
         return orderItem;
     }
 
-    public static OrderItem from(OrderItemRequestDto dto) {
+    public static OrderItem from(PostOrderItemRequestDto dto) {
         return OrderItem.createOrderItem(
                 dto.productId(),
                 dto.totalPrice(),
                 dto.quantity()
         );
     }
-
     public void setOrder(Order order) {
         this.order = order;
     }
-
-
-
 }

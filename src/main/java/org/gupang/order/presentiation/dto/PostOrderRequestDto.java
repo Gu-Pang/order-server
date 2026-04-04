@@ -21,5 +21,5 @@ public record PostOrderRequestDto (
 
         @NotEmpty(message = "주문할 상품 목록은 비어있을 수 없습니다.")
         @Valid
-        List <OrderItemRequestDto> orderItems
+        List <PostOrderItemRequestDto> orderItems
 ){}

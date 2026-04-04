@@ -23,6 +23,6 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Order findById(UUID orderId) {
         return orderJpaRepository.findById(orderId)
-                .orElseThrow(()->new CustomException(OrderErrorCode.ORDER_IS_NOT_FOUND));
+                .orElseThrow(()->new CustomException(OrderErrorCode.ORDER_NOT_FOUND));
     }
 }
