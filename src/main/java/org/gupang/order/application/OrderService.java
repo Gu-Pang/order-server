@@ -2,8 +2,11 @@ package org.gupang.order.application;
 
 import lombok.RequiredArgsConstructor;
 import org.gupang.order.application.dto.OrderRawData;
-import org.gupang.order.domain.*;
-import org.gupang.order.presentiation.dto.GetOrderResponseDto;
+import org.gupang.order.application.dto.OrderResult;
+import org.gupang.order.domain.Order;
+import org.gupang.order.domain.OrderFactory;
+import org.gupang.order.domain.OrderItem;
+import org.gupang.order.domain.OrderRepository;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,8 +42,8 @@ public class OrderService {
     }
 
     @Transactional
-    public GetOrderResponseDto getOrder(UUID orderId) {
+    public OrderResult getOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId);
-        return GetOrderResponseDto.from(order);
+        return OrderResult.from(order);
     }
 }
