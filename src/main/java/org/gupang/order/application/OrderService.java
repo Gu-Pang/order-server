@@ -41,7 +41,7 @@ public class OrderService {
         return savedOrder.getOrderId();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public OrderResult getOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId);
         return OrderResult.from(order);
@@ -54,7 +54,7 @@ public class OrderService {
         // 재고 복구 로직 필요
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<OrderResult> getOrders(Pageable pageable) {
        return orderRepository.findAllByOrder(pageable).map(OrderResult::from);
     }
