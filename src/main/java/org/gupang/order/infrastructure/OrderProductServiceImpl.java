@@ -2,7 +2,9 @@ package org.gupang.order.infrastructure;
 
 import lombok.RequiredArgsConstructor;
 import org.gupang.order.domain.OrderProductService;
+import org.gupang.order.domain.dto.OrderCompanyInfo;
 import org.gupang.order.domain.dto.OrderProductInfo;
+import org.gupang.order.infrastructure.dto.CompanyResponseDto;
 import org.gupang.order.infrastructure.dto.ProductResponseDto;
 import org.springframework.stereotype.Service;
 
@@ -20,5 +22,17 @@ public class OrderProductServiceImpl implements OrderProductService {
         List<ProductResponseDto> productResponseDtos = companyProductClient.getProducts(productIds);
 
         return productResponseDtos.stream().map(OrderProductInfo::from).toList();
+    }
+
+    @Override
+    public OrderCompanyInfo getOrderCompanyInfo(UUID companyId) {
+        CompanyResponseDto responseDto = companyProductClient.getCompany(companyId);
+
+        return new OrderCompanyInfo(
+                responseDto.companyId(),
+                responseDto.companyName(),
+                responseDto.companyAddress(),
+                responseDto.companyAddressDetail()
+        );
     }
 }
