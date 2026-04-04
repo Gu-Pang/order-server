@@ -8,6 +8,8 @@ import org.gupang.order.domain.OrderFactory;
 import org.gupang.order.domain.OrderItem;
 import org.gupang.order.domain.OrderRepository;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,20 +37,25 @@ public class OrderService {
                 .toList();
 
         Order order = orderFactory.createFrom(postOrderRequestDto,rawData,orderItems);
-
         Order savedOrder = orderRepository.save(order);
-
         return savedOrder.getOrderId();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public OrderResult getOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId);
         return OrderResult.from(order);
     }
 
+    @Transactional
     public void cancelOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId);
         order.cancel();
+        // 재고 복구 로직 필요
+    }
+
+    @Transactional(readOnly = true)
+    public Page<OrderResult> getOrders(Pageable pageable) {
+       return orderRepository.findAllByOrder(pageable).map(OrderResult::from);
     }
 }
