@@ -58,4 +58,16 @@ public class OrderController {
         );
         return ResponseEntity.ok(result);
     }
+
+    @PatchMapping("/{orderId}/shipping")
+    public ResponseEntity<Void> startShipping(@PathVariable UUID orderId){
+        orderService.startShipping(orderId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{orderId}/complete")
+    public ResponseEntity<Void> completeOrder(@PathVariable UUID orderId){
+        orderService.completeOrder(orderId);
+        return ResponseEntity.ok().build();
+    }
 }

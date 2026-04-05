@@ -124,5 +124,12 @@ public class Order extends BaseEntity {
         this.status = Status.ORDER_CANCEL;
     }
 
+    public void complete() {
+        if (this.status != Status.ORDER_SHIPPING) {
+            throw new CustomException(OrderErrorCode.INVALID_STATUS_TRANSITION); // 적절한 에러코드 필요
+        }
+        this.status = Status.ORDER_COMPLETED;
+    }
+
 
 }

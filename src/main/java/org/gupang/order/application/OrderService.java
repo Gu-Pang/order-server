@@ -65,4 +65,16 @@ public class OrderService {
 
         return OrderResult.from(order);
     }
+
+    @Transactional
+    public void startShipping(UUID orderId) {
+        Order order = orderRepository.findById(orderId);
+        order.startShipping();
+    }
+
+    @Transactional
+    public void completeOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId);
+        order.complete();
+    }
 }
