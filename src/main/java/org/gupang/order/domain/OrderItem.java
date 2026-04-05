@@ -3,6 +3,8 @@ package org.gupang.order.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.gupang.common.exception.CustomException;
+import org.gupang.order.exception.OrderErrorCode;
 import org.gupang.order.presentiation.dto.PostOrderItemRequestDto;
 
 import java.util.UUID;
@@ -39,14 +41,16 @@ public class OrderItem {
         return orderItem;
     }
 
-    public static OrderItem from(PostOrderItemRequestDto dto) {
-        return OrderItem.createOrderItem(
-                dto.productId(),
-                dto.totalPrice(),
-                dto.quantity()
-        );
-    }
+
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public void updateQuantity(int newQuantity, Long unitPrice){
+        if (newQuantity < 1) {
+            throw new CustomException(OrderErrorCode.INVALID_ORDER_QUANTITY);
+        }
+        this.quantity = newQuantity;
+        this.totalPrice = unitPrice * newQuantity;
     }
 }

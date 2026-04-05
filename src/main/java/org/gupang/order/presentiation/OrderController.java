@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.gupang.order.application.OrderService;
 import org.gupang.order.application.dto.OrderResult;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
+import org.gupang.order.presentiation.dto.UpdateOrderRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -42,4 +43,19 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrders(pageable));
     }
 
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<OrderResult> updateOrder(
+            @PathVariable UUID orderId,
+           @Valid @RequestBody UpdateOrderRequestDto requestDto){
+
+        OrderResult result = orderService.updateOrder(
+                orderId,
+                requestDto.address(),
+                requestDto.detailAddress(),
+                requestDto.message(),
+                requestDto.productId(),
+                requestDto.quantity()
+        );
+        return ResponseEntity.ok(result);
+    }
 }

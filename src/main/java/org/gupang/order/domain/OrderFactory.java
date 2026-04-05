@@ -5,12 +5,11 @@ import org.gupang.order.presentiation.dto.PostOrderRequestDto;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.UUID;
 
 @Component
 public class OrderFactory {
 
-    public Order createFrom(PostOrderRequestDto dto, OrderRawData rawData, List<OrderItem> items) {
+    public Order createFrom(PostOrderRequestDto dto, OrderRawData rawData) {
         DeliveryInfo shippingInfo = new DeliveryInfo(
                 dto.address(),
                 dto.detailAddress()
@@ -21,6 +20,14 @@ public class OrderFactory {
                 rawData.companyInfo().companyAddressDetail()
         );
 
+        List<OrderItem> items = dto.orderItems().stream()
+                .map(itemDto -> OrderItem.createOrderItem(
+                        itemDto.productId(),
+                        itemDto.totalPrice(),
+                        itemDto.quantity()
+                ))
+                .toList();
+
         return Order.createOrder(
                 rawData.companyInfo().companyId(),
                 dto.receiverId(),
@@ -30,4 +37,9 @@ public class OrderFactory {
                 items
         );
     }
+
+    public DeliveryInfo createDeliveryInfo(String address, String detailAddress) {
+        return new DeliveryInfo(address, detailAddress);
+    }
+
 }

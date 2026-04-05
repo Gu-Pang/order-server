@@ -82,6 +82,26 @@ public class Order extends BaseEntity {
         return order;
     }
 
+    public void updateOrder(DeliveryInfo deliveryInfo, String message, UUID productId, int newQuantity, Long unitPrice) {
+        validateModifiable();
+
+        this.receiverInfo = deliveryInfo;
+        this.message = message;
+
+        OrderItem item = this.orderItems.stream()
+                .filter(i -> i.getProductId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(OrderErrorCode.PRODUCT_NOT_BELONG_TO_SUPPLIER));
+
+        item.updateQuantity(newQuantity, unitPrice);
+    }
+
+    private void validateModifiable() {
+        if (this.status != Status.ORDER_ACCEPT) {
+            throw new CustomException(OrderErrorCode.ORDER_ALREADY_IN_TRANSIT);
+        }
+    }
+
     private void addOrderItem(OrderItem item){
         this.orderItems.add(item);
         item.setOrder(this);
@@ -103,5 +123,6 @@ public class Order extends BaseEntity {
         }
         this.status = Status.ORDER_CANCEL;
     }
+
 
 }
