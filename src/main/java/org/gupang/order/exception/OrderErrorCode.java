@@ -18,7 +18,9 @@ public enum OrderErrorCode implements BaseErrorCode {
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
     SUPPLIER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않거나 유효하지 않은 업체 정보입니다."),
     ORDER_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST,"이미 취소된 주문 입니다."),
-    ORDER_ALREADY_IN_TRANSIT(HttpStatus.CONFLICT,"배송 중인 주문은 취소할 수 없습니다.")
+    ORDER_ALREADY_IN_TRANSIT(HttpStatus.CONFLICT,"배송 중인 주문은 취소할 수 없습니다."),
+    INVALID_STATUS_TRANSITION(HttpStatus.BAD_REQUEST,"상태 값이 올바르지 않습니다.")
+
     ;
 
     private final HttpStatus httpStatus;
