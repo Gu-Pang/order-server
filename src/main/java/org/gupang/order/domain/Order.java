@@ -56,6 +56,8 @@ public class Order extends BaseEntity {
     )
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    private boolean isDeleted = false;
+
     public static Order createOrder(
             UUID supplierId,
             UUID receiverId,
@@ -129,6 +131,13 @@ public class Order extends BaseEntity {
             throw new CustomException(OrderErrorCode.INVALID_STATUS_TRANSITION); // 적절한 에러코드 필요
         }
         this.status = Status.ORDER_COMPLETED;
+    }
+
+    public void delete(){
+        if (this.status == Status.ORDER_SHIPPING){
+            throw new CustomException(OrderErrorCode.INVALID_STATUS_TRANSITION);
+        }
+        this.isDeleted = true;
     }
 
 
