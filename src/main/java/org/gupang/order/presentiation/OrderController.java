@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.gupang.order.application.OrderService;
 import org.gupang.order.application.dto.OrderResult;
+import org.gupang.order.presentiation.dto.OrderResponse;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
+import org.gupang.order.presentiation.dto.UpdateOrderRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -27,8 +29,31 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResult> getOrder(@PathVariable UUID orderId){
-        return ResponseEntity.ok(orderService.getOrder(orderId));
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable UUID orderId){
+        OrderResult orderResult = orderService.getOrder(orderId);
+        return ResponseEntity.ok(OrderResponse.from(orderResult));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<OrderResponse>> getAllOrders(Pageable pageable){
+        Page<OrderResult> results = orderService.getOrders(pageable);
+        return ResponseEntity.ok(results.map(OrderResponse::from));
+    }
+
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<OrderResponse> updateOrder(
+            @PathVariable UUID orderId,
+           @Valid @RequestBody UpdateOrderRequestDto requestDto){
+
+        OrderResult result = orderService.updateOrder(
+                orderId,
+                requestDto.address(),
+                requestDto.detailAddress(),
+                requestDto.message(),
+                requestDto.productId(),
+                requestDto.quantity()
+        );
+        return ResponseEntity.ok(OrderResponse.from(result));
     }
 
     @PatchMapping("/{orderId}/cancel")
@@ -37,9 +62,21 @@ public class OrderController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
-    public ResponseEntity<Page<OrderResult>> getAllOrders(Pageable pageable){
-        return ResponseEntity.ok(orderService.getOrders(pageable));
+    @PatchMapping("/{orderId}/shipping")
+    public ResponseEntity<Void> startShipping(@PathVariable UUID orderId){
+        orderService.startShipping(orderId);
+        return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/{orderId}/complete")
+    public ResponseEntity<Void> completeOrder(@PathVariable UUID orderId){
+        orderService.completeOrder(orderId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable UUID orderId){
+        orderService.deleteOrder(orderId);
+        return ResponseEntity.ok().build();
+    }
 }

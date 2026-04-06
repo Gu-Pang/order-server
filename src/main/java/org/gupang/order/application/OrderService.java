@@ -3,9 +3,9 @@ package org.gupang.order.application;
 import lombok.RequiredArgsConstructor;
 import org.gupang.order.application.dto.OrderRawData;
 import org.gupang.order.application.dto.OrderResult;
+import org.gupang.order.domain.DeliveryInfo;
 import org.gupang.order.domain.Order;
 import org.gupang.order.domain.OrderFactory;
-import org.gupang.order.domain.OrderItem;
 import org.gupang.order.domain.OrderRepository;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
 import org.springframework.data.domain.Page;
@@ -32,11 +32,8 @@ public class OrderService {
         OrderRawData rawData = orderInfoProvider.getOrderRawData(productIds);
 
         orderValidator.validate(postOrderRequestDto, rawData);
-        List<OrderItem> orderItems = postOrderRequestDto.orderItems().stream()
-                .map(OrderItem ::from)
-                .toList();
 
-        Order order = orderFactory.createFrom(postOrderRequestDto,rawData,orderItems);
+        Order order = orderFactory.createFrom(postOrderRequestDto,rawData);
         Order savedOrder = orderRepository.save(order);
         return savedOrder.getOrderId();
     }
@@ -57,5 +54,36 @@ public class OrderService {
     @Transactional(readOnly = true)
     public Page<OrderResult> getOrders(Pageable pageable) {
        return orderRepository.findAllByOrder(pageable).map(OrderResult::from);
+    }
+
+    @Transactional
+    public OrderResult updateOrder(UUID orderId,String address,String detailAddress, String message,UUID productId,int newQuantity) {
+        Order order = orderRepository.findById(orderId);
+        OrderRawData rawData = orderInfoProvider.getOrderRawData(List.of(productId));
+
+        orderValidator.validateUpdate(productId,newQuantity,rawData);
+
+        DeliveryInfo newInfo = orderFactory.createDeliveryInfo(address, detailAddress);
+        order.updateOrder(newInfo,message,productId,newQuantity,rawData.productInfos().get(0).price());
+
+        return OrderResult.from(order);
+    }
+
+    @Transactional
+    public void startShipping(UUID orderId) {
+        Order order = orderRepository.findById(orderId);
+        order.startShipping();
+    }
+
+    @Transactional
+    public void completeOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId);
+        order.complete();
+    }
+
+    @Transactional
+    public void deleteOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId);
+        order.delete();
     }
 }
