@@ -3,7 +3,10 @@ package org.gupang.order.application;
 import lombok.RequiredArgsConstructor;
 import org.gupang.order.application.dto.OrderRawData;
 import org.gupang.order.application.dto.OrderResult;
-import org.gupang.order.domain.*;
+import org.gupang.order.domain.DeliveryInfo;
+import org.gupang.order.domain.Order;
+import org.gupang.order.domain.OrderFactory;
+import org.gupang.order.domain.OrderRepository;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -76,5 +79,11 @@ public class OrderService {
     public void completeOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId);
         order.complete();
+    }
+
+    @Transactional
+    public void deleteOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId);
+        order.delete();
     }
 }
