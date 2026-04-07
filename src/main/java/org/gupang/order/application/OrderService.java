@@ -1,12 +1,14 @@
 package org.gupang.order.application;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.gupang.order.application.dto.OrderRawData;
 import org.gupang.order.application.dto.OrderResult;
 import org.gupang.order.domain.DeliveryInfo;
 import org.gupang.order.domain.Order;
 import org.gupang.order.domain.OrderFactory;
 import org.gupang.order.domain.OrderRepository;
+import org.gupang.order.infrastructure.dto.DeliveryRequest;
 import org.gupang.order.presentiation.dto.PostOrderRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -23,18 +26,24 @@ public class OrderService {
     private final OrderValidator orderValidator;
     private final OrderFactory orderFactory;
     private final OrderInfoProvider orderInfoProvider;
+    private final DeliveryInfoProvider deliveryInfoProvider;
 
     @Transactional
     public UUID createOrder(PostOrderRequestDto postOrderRequestDto) {
-    List<UUID> productIds = postOrderRequestDto.orderItems().stream()
-            .map(item -> item.productId())
-            .toList();
-        OrderRawData rawData = orderInfoProvider.getOrderRawData(productIds);
+        List<UUID> productIds = postOrderRequestDto.orderItems().stream()
+                .map(item -> item.productId())
+                .toList();
+        log.info("productIds = {}", productIds);
 
-        orderValidator.validate(postOrderRequestDto, rawData);
+        OrderRawData rawData = orderInfoProvider.getOrderRawData(productIds);
+        log.info("rawData = {}", rawData);
+//        orderValidator.validate(postOrderRequestDto, rawData);
+
 
         Order order = orderFactory.createFrom(postOrderRequestDto,rawData);
         Order savedOrder = orderRepository.save(order);
+
+        deliveryInfoProvider.createDelivery(DeliveryRequest.from(order));
         return savedOrder.getOrderId();
     }
 
