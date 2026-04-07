@@ -1,6 +1,7 @@
 package org.gupang.order.application;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.gupang.order.application.dto.OrderRawData;
 import org.gupang.order.application.dto.OrderResult;
 import org.gupang.order.domain.DeliveryInfo;
@@ -26,15 +27,18 @@ public class OrderService {
 
     @Transactional
     public UUID createOrder(PostOrderRequestDto postOrderRequestDto) {
-    List<UUID> productIds = postOrderRequestDto.orderItems().stream()
-            .map(item -> item.productId())
-            .toList();
-        OrderRawData rawData = orderInfoProvider.getOrderRawData(productIds);
+        List<UUID> productIds = postOrderRequestDto.orderItems().stream()
+                .map(item -> item.productId())
+                .toList();
 
-        orderValidator.validate(postOrderRequestDto, rawData);
+        OrderRawData rawData = orderInfoProvider.getOrderRawData(productIds);
+        log.info("rawData = {}", rawData);
+//        orderValidator.validate(postOrderRequestDto, rawData);
+
 
         Order order = orderFactory.createFrom(postOrderRequestDto,rawData);
         Order savedOrder = orderRepository.save(order);
+
         return savedOrder.getOrderId();
     }
 

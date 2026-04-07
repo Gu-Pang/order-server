@@ -42,14 +42,14 @@ public class OrderValidator {
     }
    private void validateBusinessRules(PostOrderRequestDto postOrderRequestDto, OrderRawData rawData){
        Map<UUID, OrderProductInfo> productMap = createProductMap(rawData.productInfos());
-       UUID supplierId = rawData.companyInfo().companyId();
+//       UUID supplierId = rawData.companyInfo().companyId();
 
        for(PostOrderItemRequestDto itemRequestDto : postOrderRequestDto.orderItems()){
            OrderProductInfo info = productMap.get(itemRequestDto.productId());
            validateStockAndQuantity(itemRequestDto.quantity(),info.stock());
-           if(!info.companyId().equals(supplierId)){
-               throw new CustomException(OrderErrorCode.MULTI_SUPPLIER_NOT_ALLOWED);
-           }
+//           if(!info.companyId().equals(supplierId)){
+//               throw new CustomException(OrderErrorCode.MULTI_SUPPLIER_NOT_ALLOWED);
+//           }
        }
    }
 
