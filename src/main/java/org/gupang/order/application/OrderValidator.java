@@ -18,7 +18,7 @@ public class OrderValidator {
     public void validate(PostOrderRequestDto postOrderRequestDto, OrderRawData rawData) {
         validateHasData(rawData.productInfos());
         validateIsProduct(postOrderRequestDto,rawData.productInfos());
-        validateBusinessRules(postOrderRequestDto,rawData);
+//        validateBusinessRules(postOrderRequestDto,rawData);
     }
 
     public void validateUpdate(UUID productId, int quantity, OrderRawData rawData) {
