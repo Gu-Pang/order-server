@@ -12,8 +12,8 @@ import java.util.UUID;
 @FeignClient(name = "company-server")
 public interface CompanyProductClient {
 
-    @GetMapping("/api/v1/products/{product_id}")
-    List<ProductResponseDto> getProducts(@PathVariable("product_id") List<UUID> productIds);
+    @GetMapping("/api/v1/products/list/{product_ids}")
+    List<ProductResponseDto> getProducts(@PathVariable("product_ids") List<UUID> productIds);
 
     @GetMapping("/api/v1/companies/{company_id}")
     CompanyResponseDto getCompany(@PathVariable("company_id") UUID companyId);
