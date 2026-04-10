@@ -21,7 +21,9 @@ public class OrderProductServiceImpl implements OrderProductService {
     public List<OrderProductInfo> getOrderProductInfo(List<UUID> productIds) {
         List<ProductResponseDto> productResponseDtos = companyProductClient.getProducts(productIds);
 
-        return productResponseDtos.stream().map(OrderProductInfo::from).toList();
+        return productResponseDtos.stream()
+                .map(OrderProductInfo::from)
+                .toList();
     }
 
     @Override
